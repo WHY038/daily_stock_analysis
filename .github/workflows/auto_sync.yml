@@ -1,0 +1,21 @@
+name: Auto Sync Fork
+run-name: ${{ github.actor }} is syncing fork with upstream
+
+# 每天自动同步一次，也支持手动触发
+on:
+  schedule:
+    - cron: '0 0 * * *'  # 每天凌晨执行（UTC时间，对应北京时间早上8点）
+  workflow_dispatch:     # 允许你手动点击触发
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync fork with upstream
+        uses: repo-sync/pull-request@v2
+        with:
+          # 这里填原作者的仓库地址（你截图里的是 ZhuLinsen/daily_stock_analysis）
+          source_repository: ZhuLinsen/daily_stock_analysis
+          destination_branch: "main"
+          pr_branch: "auto-sync-upstream"
+          github_token: ${{ secrets.GITHUB_TOKEN }}
