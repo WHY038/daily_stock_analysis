@@ -1,21 +1,27 @@
 name: Auto Sync Fork
 run-name: ${{ github.actor }} is syncing fork with upstream
 
-# 每天自动同步一次，也支持手动触发
 on:
   schedule:
-    - cron: '0 0 * * *'  # 每天凌晨执行（UTC时间，对应北京时间早上8点）
-  workflow_dispatch:     # 允许你手动点击触发
+    - cron: '0 8 * * *' # 北京时间每天早上4点自动运行（UTC时间0点）
+  workflow_dispatch: # 支持手动触发
 
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Sync fork with upstream
         uses: repo-sync/pull-request@v2
         with:
-          # 这里填原作者的仓库地址（你截图里的是 ZhuLinsen/daily_stock_analysis）
-          source_repository: ZhuLinsen/daily_stock_analysis
-          destination_branch: "main"
-          pr_branch: "auto-sync-upstream"
+          source_repository: Zhulinsen/daily_stock_analysis
+          destination_repository: ${{ github.repository }}
+          source_branch: main
+          destination_branch: main
           github_token: ${{ secrets.GITHUB_TOKEN }}
+          pr_title: "Auto Sync: Update from upstream"
+          pr_body: "This PR syncs the latest changes from the original repository."
